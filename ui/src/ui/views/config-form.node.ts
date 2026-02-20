@@ -164,7 +164,7 @@ export function renderNode(params: {
               >
                 ${
                   // oxlint-disable typescript/no-base-to-string
-                  String(lit)
+                  t(String(lit))
                 }
               </button>
             `,
@@ -224,7 +224,7 @@ export function renderNode(params: {
                 ?disabled=${disabled}
                 @click=${() => onPatch(path, opt)}
               >
-                ${String(opt)}
+                ${t(String(opt))}
               </button>
             `,
             )}
