@@ -455,7 +455,7 @@ function renderSelect(params: {
         <option value=${unset}>Select...</option>
         ${options.map(
           (opt, idx) => html`
-          <option value=${String(idx)}>${String(opt)}</option>
+          <option value=${String(idx)}>${t(String(opt))}</option>
         `,
         )}
       </select>
