@@ -1,12 +1,4 @@
 import { html, nothing } from "lit";
-import type {
-  AgentFileEntry,
-  AgentsFilesListResult,
-  ChannelAccountSnapshot,
-  ChannelsStatusSnapshot,
-  CronJob,
-  CronStatus,
-} from "../types.ts";
 import { formatRelativeTimestamp } from "../format.ts";
 import { t } from "../i18n/index.js";
 import {
@@ -15,6 +7,14 @@ import {
   formatCronState,
   formatNextRun,
 } from "../presenter.ts";
+import type {
+  AgentFileEntry,
+  AgentsFilesListResult,
+  ChannelAccountSnapshot,
+  ChannelsStatusSnapshot,
+  CronJob,
+  CronStatus,
+} from "../types.ts";
 import { formatBytes, type AgentContext } from "./agents-utils.ts";
 
 function renderAgentContextCard(context: AgentContext, subtitle: string) {

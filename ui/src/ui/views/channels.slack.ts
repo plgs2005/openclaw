@@ -1,9 +1,9 @@
 import { html, nothing } from "lit";
-import type { SlackStatus } from "../types.ts";
-import type { ChannelsProps } from "./channels.types.ts";
 import { formatRelativeTimestamp, translateUiError } from "../format.ts";
 import { t } from "../i18n/index.js";
+import type { SlackStatus } from "../types.ts";
 import { renderChannelConfigSection } from "./channels.config.ts";
+import type { ChannelsProps } from "./channels.types.ts";
 
 export function renderSlackCard(params: {
   props: ChannelsProps;

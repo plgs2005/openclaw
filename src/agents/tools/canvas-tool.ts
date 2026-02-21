@@ -1,10 +1,10 @@
-import { Type } from "@sinclair/typebox";
 import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { OpenClawConfig } from "../../config/config.js";
+import { Type } from "@sinclair/typebox";
 import { writeBase64ToFile } from "../../cli/nodes-camera.js";
 import { canvasSnapshotTempPath, parseCanvasSnapshotPayload } from "../../cli/nodes-canvas.js";
+import type { OpenClawConfig } from "../../config/config.js";
 import { openFileWithinRoot, SafeOpenError } from "../../infra/fs-safe.js";
 import { getAgentScopedMediaLocalRoots } from "../../media/local-roots.js";
 import { imageMimeFromFormat } from "../../media/mime.js";

@@ -1,3 +1,4 @@
+import { inspect } from "node:util";
 import {
   Client,
   ReadyListener,
@@ -6,11 +7,9 @@ import {
 } from "@buape/carbon";
 import { GatewayCloseCodes, type GatewayPlugin } from "@buape/carbon/gateway";
 import { Routes } from "discord-api-types/v10";
-import { inspect } from "node:util";
-import type { HistoryEntry } from "../../auto-reply/reply/history.js";
-import type { OpenClawConfig, ReplyToMode } from "../../config/config.js";
 import { resolveTextChunkLimit } from "../../auto-reply/chunk.js";
 import { listNativeCommandSpecsForConfig } from "../../auto-reply/commands-registry.js";
+import type { HistoryEntry } from "../../auto-reply/reply/history.js";
 import { listSkillCommandsForAgents } from "../../auto-reply/skill-commands.js";
 import {
   addAllowlistUserEntriesFromConfigEntry,
@@ -25,6 +24,7 @@ import {
   resolveNativeCommandsEnabled,
   resolveNativeSkillsEnabled,
 } from "../../config/commands.js";
+import type { OpenClawConfig, ReplyToMode } from "../../config/config.js";
 import { loadConfig } from "../../config/config.js";
 import { danger, logVerbose, shouldLogVerbose, warn } from "../../globals.js";
 import { formatErrorMessage } from "../../infra/errors.js";

@@ -1,6 +1,6 @@
 import { html, nothing } from "lit";
-import type { SkillStatusEntry } from "../types.ts";
 import { t } from "../i18n/index.js";
+import type { SkillStatusEntry } from "../types.ts";
 
 export function computeSkillMissing(skill: SkillStatusEntry): string[] {
   return [

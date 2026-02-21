@@ -1,4 +1,5 @@
 import { html, nothing } from "lit";
+import { t } from "../i18n/index.js";
 import type {
   AgentIdentityResult,
   AgentsFilesListResult,
@@ -8,7 +9,6 @@ import type {
   CronStatus,
   SkillStatusReport,
 } from "../types.ts";
-import { t } from "../i18n/index.js";
 import {
   renderAgentFiles,
   renderAgentChannels,
