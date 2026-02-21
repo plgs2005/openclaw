@@ -1,4 +1,5 @@
 import { html, nothing, type TemplateResult } from "lit";
+import { t } from "../../i18n/index.ts";
 import type { ConfigUiHints } from "../types.ts";
 import {
   defaultValue,
@@ -25,6 +26,44 @@ function jsonValue(value: unknown): string {
   } catch {
     return "";
   }
+}
+
+function renderJsonFallback(params: {
+  label: string;
+  help: string | undefined;
+  value: unknown;
+  path: Array<string | number>;
+  disabled: boolean;
+  showLabel: boolean;
+  onPatch: (path: Array<string | number>, value: unknown) => void;
+}): TemplateResult {
+  const { label, help, value, path, disabled, showLabel, onPatch } = params;
+  const display = jsonValue(value);
+  return html`
+    <div class="cfg-field">
+      ${showLabel ? html`<label class="cfg-field__label">${label}</label>` : nothing}
+      ${help ? html`<div class="cfg-field__help">${help}</div>` : nothing}
+      <textarea
+        class="cfg-textarea"
+        rows=${Math.min(Math.max((display.match(/\n/g)?.length ?? 0) + 1, 2), 10)}
+        placeholder="${t("configForm.jsonValuePlaceholder")}"
+        .value=${display}
+        ?disabled=${disabled}
+        @change=${(e: Event) => {
+          const raw = (e.target as HTMLTextAreaElement).value.trim();
+          if (!raw) {
+            onPatch(path, undefined);
+            return;
+          }
+          try {
+            onPatch(path, JSON.parse(raw));
+          } catch {
+            // leave as-is if invalid JSON
+          }
+        }}
+      ></textarea>
+    </div>
+  `;
 }
 
 // SVG Icons as template literals
@@ -520,13 +559,8 @@ export function renderNode(params: {
     return renderTextInput({ ...params, inputType: "text" });
   }
 
-  // Fallback
-  return html`
-    <div class="cfg-field cfg-field--error">
-      <div class="cfg-field__label">${label}</div>
-      <div class="cfg-field__error">Unsupported type: ${type}. Use Raw mode.</div>
-    </div>
-  `;
+  // Fallback — render a JSON textarea for types the form renderer doesn't know about
+  return renderJsonFallback({ label, help, value, path, disabled, onPatch, showLabel });
 }
 
 function renderTextInput(params: {
@@ -595,7 +629,7 @@ function renderTextInput(params: {
           <button
             type="button"
             class="cfg-input__reset"
-            title="Reset to default"
+            title="${t("configForm.resetDefault")}"
             ?disabled=${disabled}
             @click=${() => onPatch(path, schema.default)}
           >↺</button>
@@ -834,7 +868,7 @@ function renderArray(params: {
     return html`
       <div class="cfg-field cfg-field--error">
         <div class="cfg-field__label">${label}</div>
-        <div class="cfg-field__error">Unsupported array schema. Use Raw mode.</div>
+        <div class="cfg-field__error">${t("configForm.unsupportedArray")}</div>
       </div>
     `;
   }
@@ -859,7 +893,7 @@ function renderArray(params: {
           }}
         >
           <span class="cfg-array__add-icon">${icons.plus}</span>
-          Add
+          ${t("configForm.add")}
         </button>
       </div>
       ${help ? html`<div class="cfg-array__help">${help}</div>` : nothing}
@@ -867,7 +901,7 @@ function renderArray(params: {
       ${
         arr.length === 0
           ? html`
-              <div class="cfg-array__empty">No items yet. Click "Add" to create one.</div>
+              <div class="cfg-array__empty">${t("configForm.noItems")}</div>
             `
           : html`
         <div class="cfg-array__items">
@@ -879,7 +913,7 @@ function renderArray(params: {
                 <button
                   type="button"
                   class="cfg-array__item-remove"
-                  title="Remove item"
+                  title="${t("configForm.removeItem")}"
                   ?disabled=${disabled}
                   @click=${() => {
                     const next = [...arr];
@@ -971,7 +1005,7 @@ function renderMapField(params: {
           }}
         >
           <span class="cfg-map__add-icon">${icons.plus}</span>
-          Add Entry
+          ${t("configForm.addEntry")}
         </button>
       </div>
 
@@ -987,42 +1021,27 @@ function renderMapField(params: {
             const fallback = jsonValue(entryValue);
             return html`
               <div class="cfg-map__item">
-                <div class="cfg-map__item-header">
-                  <div class="cfg-map__item-key">
-                    <input
-                      type="text"
-                      class="cfg-input cfg-input--sm"
-                      placeholder="Key"
-                      .value=${key}
-                      ?disabled=${disabled}
-                      @change=${(e: Event) => {
-                        const nextKey = (e.target as HTMLInputElement).value.trim();
-                        if (!nextKey || nextKey === key) {
-                          return;
-                        }
-                        const next = { ...value };
-                        if (nextKey in next) {
-                          return;
-                        }
-                        next[nextKey] = next[key];
-                        delete next[key];
-                        onPatch(path, next);
-                      }}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    class="cfg-map__item-remove"
-                    title="Remove entry"
+                <div class="cfg-map__item-key">
+                  <input
+                    type="text"
+                    class="cfg-input cfg-input--sm"
+                    placeholder="Key"
+                    .value=${key}
                     ?disabled=${disabled}
-                    @click=${() => {
+                    @change=${(e: Event) => {
+                      const nextKey = (e.target as HTMLInputElement).value.trim();
+                      if (!nextKey || nextKey === key) {
+                        return;
+                      }
                       const next = { ...value };
+                      if (nextKey in next) {
+                        return;
+                      }
+                      next[nextKey] = next[key];
                       delete next[key];
                       onPatch(path, next);
                     }}
-                  >
-                    ${icons.trash}
-                  </button>
+                  />
                 </div>
                 <div class="cfg-map__item-value">
                   ${
@@ -1030,7 +1049,7 @@ function renderMapField(params: {
                       ? html`
                         <textarea
                           class="cfg-textarea cfg-textarea--sm"
-                          placeholder="JSON value"
+                          placeholder="${t("configForm.jsonValuePlaceholder")}"
                           rows="2"
                           .value=${fallback}
                           ?disabled=${disabled}
@@ -1062,6 +1081,19 @@ function renderMapField(params: {
                         })
                   }
                 </div>
+                <button
+                  type="button"
+                  class="cfg-map__item-remove"
+                  title="Remove entry"
+                  ?disabled=${disabled}
+                  @click=${() => {
+                    const next = { ...value };
+                    delete next[key];
+                    onPatch(path, next);
+                  }}
+                >
+                  ${icons.trash}
+                </button>
               </div>
             `;
           })}
