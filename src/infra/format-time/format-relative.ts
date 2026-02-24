@@ -130,7 +130,7 @@ export function formatRelativeTimestamp(
 
   // Fall back to short date display for old timestamps
   try {
-    const localeTag = locale && resolveLocaleTag(locale).startsWith("pt") ? "pt-BR" : "en-US";
+    const localeTag = locale ?? "en-US";
     return new Intl.DateTimeFormat(localeTag, {
       month: "short",
       day: "numeric",

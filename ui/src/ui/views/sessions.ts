@@ -206,9 +206,19 @@ export function renderSessions(props: SessionsProps) {
             ? html`
                 <div class="muted">No sessions found.</div>
               `
-            : rows.map((row) =>
-                renderRow(row, props.basePath, props.onPatch, props.onDelete, props.loading),
-              )
+            : (() => {
+                const locale = i18n.getLocale();
+                return rows.map((row) =>
+                  renderRow(
+                    row,
+                    props.basePath,
+                    props.onPatch,
+                    props.onDelete,
+                    props.loading,
+                    locale,
+                  ),
+                );
+              })()
         }
       </div>
     </section>
@@ -221,10 +231,10 @@ function renderRow(
   onPatch: SessionsProps["onPatch"],
   onDelete: SessionsProps["onDelete"],
   disabled: boolean,
+  locale: string,
 ) {
-  const updated = row.updatedAt
-    ? formatRelativeTimestamp(row.updatedAt, { locale: i18n.getLocale() })
-    : "n/a";
+  const updated =
+    row.updatedAt != null ? formatRelativeTimestamp(row.updatedAt, { locale }) : "n/a";
   const rawThinking = row.thinkingLevel ?? "";
   const isBinaryThinking = isBinaryThinkingProvider(row.modelProvider);
   const thinking = resolveThinkLevelDisplay(rawThinking, isBinaryThinking);
